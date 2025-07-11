@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Enhancer Pro",
+  "version": "1.0",
+  "description": "Enhance YouTube with AI summaries, skip intros, and more.",
+  "permissions": ["activeTab", "scripting"],
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+    }
+  },
+  "host_permissions": ["https://www.youtube.com/*"]
+}
