@@ -1,16 +1,70 @@
 import { useEffect, useState } from 'react'
+import axios from "axios";
+import { data } from 'react-router-dom';
+
+
 
 function App() {
 
 
   const [summary,setsummary]=useState("");
+  const [loading, setLoading] = useState(false);
 
-  const submitit=()=>{
+  const submitit=async()=>{
 
-  //  here we has to take the trasnscrpit of the youtube tab and we has to send
+  setLoading(true);
+   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  
 
+
+
+  if (!tab || !tab.id) {
+        setsummary("No active YouTube tab found");
+        return;
+      }
+  
+   chrome.scripting.executeScript(
+    {
+      
+      target:{tabId:tab.id},
+      func: () => {
+      const elements = document.querySelectorAll('ytd-transcript-segment-renderer');
+      
+      let text = "";
+      elements.forEach(el => text += el.textContent + " ");
+      return text;
+    },
+
+    },
+    async (results)=>{
+
+      const transcript=results[0].result;
+
+      
+     
+      
+
+      try{
+
+        const newdata=await axios.post("http://localhost:2000/summerize",{transcript,});
+  
+        setsummary(newdata.data.summary);
+
+        setLoading(false);
+      }
+
+      catch(err){
+
+        console.log("The summary is not found");
         
-  // the transcrpit id will be sended to the backend and the back end will provcess it
+      }
+
+      
+    }
+   );
+
+
+   
 
   
   }
@@ -20,7 +74,7 @@ function App() {
      <div className='new_word'>
       <h2>YouTube Enhancer</h2>
 
-     <button >Explain It</button>
+     <button onClick={submitit} >Explain It</button>
 
      <textarea 
      rows="10"
@@ -28,7 +82,7 @@ function App() {
         value={summary}
         readOnly
         style={{ marginTop: "10px" }}
-     >
+     >     
      </textarea>
       
     </div>

@@ -13,8 +13,13 @@
   "dependencies": {
     "const": "^1.0.0",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
     "express": "^5.1.0",
-    "node-summary": "^1.2.0",
-    "nodemon": "^3.1.10"
+    "node-summarizer": "^1.0.7",
+    "node-summary": "^1.1.0",
+    "nodemon": "^3.1.10",
+    "textrank": "^1.0.5",
+    "wink-eng-lite-web-model": "^1.8.1",
+    "wink-nlp": "^2.4.0"
   }
 }
