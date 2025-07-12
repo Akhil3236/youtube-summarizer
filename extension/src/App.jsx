@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import axios from "axios";
-import { data } from 'react-router-dom';
+
+import { jsPDF } from "jspdf";
 
 
 
@@ -34,40 +35,64 @@ function App() {
       elements.forEach(el => text += el.textContent + " ");
       return text;
     },
-
-    },
-    async (results)=>{
-
-      const transcript=results[0].result;
-
+    
+  },
+  async (results)=>{
+    
+    const transcript=results[0].result;
+    
+    
+    
+    
+    
+    try{
       
-     
+      const newdata=await axios.post("http://localhost:2000/summerize",{transcript,});
       
-
-      try{
-
-        const newdata=await axios.post("http://localhost:2000/summerize",{transcript,});
-  
-        setsummary(newdata.data.summary);
-
-        setLoading(false);
-      }
-
-      catch(err){
-
-        console.log("The summary is not found");
-        
-      }
-
+      setsummary(newdata.data.summary);
+      
+      setLoading(false);
+    }
+    
+    
+    
+    catch(err){
+      
+      console.log("The summary is not found");
       
     }
-   );
-
-
-   
-
-  
+    
+    
   }
+);
+
+};
+
+
+const handleDownload = (format) => {
+  if (format === "txt") downloadSummary();
+  if (format === "pdf") downloadAsPDF();
+};
+
+
+const downloadSummary = () => {
+  const element = document.createElement("a");
+  const file = new Blob([summary], { type: "text/plain" });
+  element.href = URL.createObjectURL(file);
+  element.download = "YouTube_Summary.txt";
+  document.body.appendChild(element);
+  element.click();
+};
+
+
+
+const downloadAsPDF = () => {
+  const doc = new jsPDF();
+  doc.setFontSize(12);
+  const lines = doc.splitTextToSize(summary, 180);
+  doc.text(lines, 10, 10);
+  doc.save("YouTube_Summary.pdf");
+};  
   return (
     <>
 
@@ -75,6 +100,14 @@ function App() {
       <h2>YouTube Enhancer</h2>
 
      <button onClick={submitit} >Explain It</button>
+
+     <select onChange={(e) => handleDownload(e.target.value)}>
+          <option value="">Download as...</option>
+          <option value="txt">Text</option>
+          <option value="pdf">PDF</option>
+     </select>
+
+     
 
      <textarea 
      rows="10"
@@ -84,6 +117,8 @@ function App() {
         style={{ marginTop: "10px" }}
      >     
      </textarea>
+
+    
       
     </div>
 
